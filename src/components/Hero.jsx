@@ -161,15 +161,19 @@ const Hero = ({ setIsOrderOpen }) => {
       >
 
         {/* Один большой слайд */}
-        <div className="relative w-full overflow-hidden bg-black" style={{ height: 'calc(100svh - var(--navbar-h, 80px) - 2rem - env(safe-area-inset-bottom, 0px))', maxHeight: 'calc(100svh - var(--navbar-h, 80px) - 2rem - env(safe-area-inset-bottom, 0px))' }}>
+        <div className="relative w-full overflow-hidden" style={{ height: 'calc(100svh - var(--navbar-h, 80px) - 2rem - env(safe-area-inset-bottom, 0px))', maxHeight: 'calc(100svh - var(--navbar-h, 80px) - 2rem - env(safe-area-inset-bottom, 0px))' }}>
           <div key={`${slideIdx}-${videoIdx}`} className="absolute inset-0">
+            <img
+              src={current.poster}
+              aria-label={t(`${current.key}_T`)}
+              className={`absolute inset-0 w-full h-full object-cover ${slideAnim}`}
+            />
             <video
               ref={videoRef}
               src={currentVideoSrc}
-              poster={current.poster}
               onLoadedData={() => setVideoLoaded(true)}
               aria-label={t(`${current.key}_T`)}
-              className={`w-full h-full object-cover hero-slide ${slideAnim} transition-opacity duration-[1500ms] ease-out ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+              className={`absolute inset-0 w-full h-full object-cover hero-slide ${slideAnim} transition-opacity duration-[1200ms] ease-out ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
               autoPlay
               muted
               loop
