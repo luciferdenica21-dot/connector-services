@@ -333,26 +333,19 @@ const Services = ({ setIsOrderOpen }) => {
       {selectedKey && (() => {
         const videos = SERVICES_VIDEOS[selectedKey] || [];
         const videoSrc = videos.length ? videos[0] : '';
-        const poster = SERVICES_POSTERS[selectedKey];
         return (
           <div className="fixed inset-0 z-[90] bg-black overflow-hidden">
             {videoSrc && (
-              <>
-                <img
-                  src={poster}
-                  className="absolute inset-0 w-full h-full object-cover blur-[3px] md:blur-[4px] scale-[1.02]"
-                />
-                <video
-                  src={videoSrc}
-                  onLoadedData={() => setOverlayVideoLoaded(true)}
-                  className={`absolute inset-0 w-full h-full object-cover blur-[3px] md:blur-[4px] scale-[1.02] transition-opacity duration-[1200ms] ease-out ${overlayVideoLoaded ? 'opacity-100' : 'opacity-0'}`}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                />
-              </>
+              <video
+                src={videoSrc}
+                onLoadedData={() => setOverlayVideoLoaded(true)}
+                className={`absolute inset-0 w-full h-full object-cover blur-[3px] md:blur-[4px] scale-[1.02] transition-opacity duration-[1200ms] ease-out ${overlayVideoLoaded ? 'opacity-100' : 'opacity-0'}`}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+              />
             )}
             <div className="absolute inset-0 bg-black/70" />
             <button
@@ -415,24 +408,18 @@ export const ServiceSeoPage = ({ setIsOrderOpen }) => {
   }
 
   return (
-    <section className="relative min-h-[calc(100svh-5rem-2rem)] overflow-hidden">
+    <section className="relative min-h-[calc(100svh-5rem-2rem)] overflow-hidden bg-black">
       {videoSrc && (
-        <>
-          <img
-            src={poster}
-            className="absolute inset-0 w-full h-full object-cover blur-[3px] md:blur-[4px] scale-[1.02]"
-          />
-          <video
-            src={videoSrc}
-            onLoadedData={() => setSeoVideoLoaded(true)}
-            className={`absolute inset-0 w-full h-full object-cover blur-[3px] md:blur-[4px] scale-[1.02] transition-opacity duration-[1200ms] ease-out ${seoVideoLoaded ? 'opacity-100' : 'opacity-0'}`}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-          />
-        </>
+        <video
+          src={videoSrc}
+          onLoadedData={() => setSeoVideoLoaded(true)}
+          className={`absolute inset-0 w-full h-full object-cover blur-[3px] md:blur-[4px] scale-[1.02] transition-opacity duration-[1200ms] ease-out ${seoVideoLoaded ? 'opacity-100' : 'opacity-0'}`}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+        />
       )}
       <div className="absolute inset-0 bg-black/70" />
       <div className="relative z-10 px-4 md:px-10 lg:px-16 pt-24 pb-28 w-full">
