@@ -1108,9 +1108,9 @@ const ChatWidget = ({ user }) => {
   };
 
   return (
-    <div className="fixed bottom-24 right-2 md:bottom-8 md:right-8 z-[95]">
+    <div className="fixed bottom-24 right-2 md:bottom-14 md:right-8 z-[95]">
       {hasNewMessage && !isOpen && (
-        <div className="pointer-events-none fixed bottom-[11rem] right-2 md:bottom-[7.5rem] md:right-8 z-[9999]">
+        <div className="pointer-events-none fixed bottom-[11rem] right-2 md:bottom-[9rem] md:right-8 z-[9999]">
           <div className="bg-[#050a18]/95 border border-white/10 text-white text-[11px] md:text-xs px-3 py-2 rounded-xl shadow-2xl backdrop-blur-md max-w-[80vw] md:max-w-none text-center">
             {getNewMessageToastText()}
           </div>
@@ -1134,7 +1134,7 @@ const ChatWidget = ({ user }) => {
             ${isMobile 
               ? 'fixed left-0 right-0 rounded-none' 
               : isMaximized 
-                ? 'fixed inset-4 md:left-8 md:right-8 md:bottom-8 md:top-24 rounded-4xl' 
+                ? 'fixed inset-4 md:left-8 md:right-8 md:bottom-14 md:top-24 rounded-4xl' 
                 : 'fixed top-24 right-24 md:right-28 rounded-4xl'
             } 
             bg-[#0a0a0a] border border-blue-500/20 shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl animate-fadeIn

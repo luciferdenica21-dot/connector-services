@@ -1,24 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-const OrderButton = ({ user, setIsOrderOpen, setIsAuthOpen, onRequireAuth, className, locked = false, serviceKey = null, variant = 'nav', labelKey, style }) => {
+const OrderButton = ({ setIsOrderOpen, className, locked = false, serviceKey = null, variant = 'nav', labelKey, style }) => {
   const { t } = useTranslation();
 
   const handleOrderClick = () => {
     if (locked) return;
-    if (user) {
-      setIsOrderOpen(true);
-      if (serviceKey) {
-        window.dispatchEvent(new CustomEvent('order:prefill', { detail: { serviceKey } }));
-      }
-    } else {
-      if (typeof onRequireAuth === 'function') {
-        onRequireAuth(serviceKey ? { serviceKey } : undefined);
-        return;
-      }
-      if (typeof setIsAuthOpen === 'function') {
-        setIsAuthOpen(true);
-      }
+    setIsOrderOpen(true);
+    if (serviceKey) {
+      window.dispatchEvent(new CustomEvent('order:prefill', { detail: { serviceKey } }));
     }
   };
 

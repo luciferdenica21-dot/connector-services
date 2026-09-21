@@ -98,7 +98,7 @@ const Contact = () => {
         }
       `}</style>
 
-      <section id="contact" className="relative bg-[#0a0a0a] py-12 md:py-24 px-4 overflow-hidden" data-section="contact">
+      <section id="contact" className="relative bg-[#0a0a0a] py-12 md:py-16 px-4 overflow-hidden pb-28 md:pb-16" data-section="contact">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_20%,rgba(56,189,248,0.08),transparent_70%)]"></div>
 
         <div className="relative z-10 max-w-5xl mx-auto flex flex-col items-center gap-8">
@@ -134,7 +134,7 @@ const Contact = () => {
         </div>
       </section>
 
-      <footer className="relative bg-[#050505] border-t border-white/[0.02] py-4"></footer>
+      <footer className="relative bg-[#050505] border-t border-white/[0.02] py-2 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:py-4 md:pb-4"></footer>
     </>
   );
 };

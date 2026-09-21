@@ -1,58 +1,40 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MessageCircle } from 'lucide-react';
-import OrderButton from './OrderButton';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const Hero = ({ user, setIsOrderOpen, setIsAuthOpen, onRequireAuthForOrder }) => {
+const HERO_IMGS = [
+  { key: 'S1', videos: ['/gallery/bending.mp4', '/gallery/bending2.mp4'] },
+  { key: 'S3', videos: ['/gallery/graving.mp4', '/gallery/graving2.mp4'] },
+  { key: 'S4', videos: ['/gallery/lasermetal.mp4', '/gallery/lasermetal2.mp4'] },
+  { key: 'S5', videos: ['/gallery/cutting.mp4', '/gallery/cutting2.mp4'] },
+  { key: 'S6', videos: ['/gallery/paint.mp4', '/gallery/paint2.mp4'] },
+  { key: 'S8', videos: ['/gallery/welding.mp4', '/gallery/welding2.mp4'] },
+  { key: 'S9', videos: ['/gallery/mech.mp4'] },
+  { key: 'S10', videos: ['/gallery/cnc.mp4', '/gallery/cnc2.mp4'] },
+];
+
+const Hero = ({ setIsOrderOpen }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const iconClassName = "w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24";
+  const [slideIdx, setSlideIdx] = useState(0);
+  const [slideAnim, setSlideAnim] = useState('');
+  const [videoIdx, setVideoIdx] = useState(0);
+  const animRef = useRef(false);
+  const videoRef = useRef(null);
 
-  const services = [
-    {
-      key: 'S1',
-      icon: <img src="/servicesicons/bending.svg" alt="" className={iconClassName} draggable="false" />,
-    },
-    {
-      key: 'S3',
-      icon: <img src="/servicesicons/laser%20(2).svg" alt="" className={iconClassName} draggable="false" />,
-    },
-    {
-      key: 'S4',
-      icon: <img src="/servicesicons/laser%20(1).svg" alt="" className={iconClassName} draggable="false" />,
-    },
-    {
-      key: 'S5',
-      icon: <img src="/servicesicons/laser.svg" alt="" className={`${iconClassName} brightness-0 invert`} draggable="false" />,
-    },
-    {
-      key: 'S6',
-      icon: <img src="/servicesicons/spray-gun.svg" alt="" className={`${iconClassName} brightness-0 invert`} draggable="false" />,
-    },
-    {
-      key: 'S8',
-      icon: <img src="/servicesicons/welding.svg" alt="" className={iconClassName} draggable="false" />,
-    },
-    {
-      key: 'S9',
-      colSpanClassName: 'lg:col-span-2',
-      icon: <img src="/servicesicons/lathe-machine%20(1).svg" alt="" className={iconClassName} draggable="false" />,
-    },
-    {
-      key: 'S10',
-      colSpanClassName: 'lg:col-span-2',
-      icon: <img src="/servicesicons/milling-machine%20(2).svg" alt="" className={iconClassName} draggable="false" />,
-    },
-    {
-      key: 'S11',
-      disabled: true,
-      colSpanClassName: 'col-span-2 md:col-span-1 lg:col-span-2',
-      icon: <img src="/servicesicons/design-thinking.svg" alt="" className={iconClassName} draggable="false" />,
-    },
-  ];
+  const goTo = (dir) => {
+    if (animRef.current) return;
+    animRef.current = true;
+    setSlideAnim(dir > 0 ? 'slide-out-left' : 'slide-out-right');
+    setTimeout(() => {
+      setSlideIdx(i => (i + dir + HERO_IMGS.length) % HERO_IMGS.length);
+      setVideoIdx(v => (v + 1) % 2);
+      setSlideAnim(dir > 0 ? 'slide-in-right' : 'slide-in-left');
+      setTimeout(() => { setSlideAnim(''); animRef.current = false; }, 350);
+    }, 200);
+  };
 
   const [scrollY, setScrollY] = useState(0);
   const [heroLayout, setHeroLayout] = useState('default');
@@ -62,51 +44,39 @@ const Hero = ({ user, setIsOrderOpen, setIsAuthOpen, onRequireAuthForOrder }) =>
     try {
       const tracker = window.__analyticsTracker;
       if (tracker) tracker.sectionOpen('hero');
-      return () => {
-        const t = window.__analyticsTracker;
-        if (t) t.sectionClose('hero');
-      };
+      return () => { try { window.__analyticsTracker?.sectionClose('hero'); } catch { void 0; } };
     } catch { void 0; }
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
     if (location?.pathname !== '/') return;
     if (heroLayout !== 'mobilePortrait') return;
-
-    const prevHtmlOverflowY = document.documentElement.style.overflowY;
-    const prevBodyOverflowY = document.body.style.overflowY;
-
+    const prevHtml = document.documentElement.style.overflowY;
+    const prevBody = document.body.style.overflowY;
     document.documentElement.style.overflowY = 'hidden';
     document.body.style.overflowY = 'hidden';
-
     return () => {
-      document.documentElement.style.overflowY = prevHtmlOverflowY;
-      document.body.style.overflowY = prevBodyOverflowY;
+      document.documentElement.style.overflowY = prevHtml;
+      document.body.style.overflowY = prevBody;
     };
   }, [heroLayout, location?.pathname]);
 
   useEffect(() => {
     const updateLayout = () => {
       if (typeof window === 'undefined') return;
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const isLandscape = width > height;
-
-      const isShortLandscape = isLandscape && width <= 900 && height <= 520;
-      const isMobilePortrait = !isLandscape && width < 768;
-
+      const w = window.innerWidth, h = window.innerHeight;
+      const isLandscape = w > h;
+      const isShortLandscape = isLandscape && w <= 900 && h <= 520;
+      const isMobilePortrait = !isLandscape && w < 768;
       setHeroLayout(isShortLandscape ? 'shortLandscape' : isMobilePortrait ? 'mobilePortrait' : 'default');
     };
-
     updateLayout();
     window.addEventListener('resize', updateLayout);
     window.addEventListener('orientationchange', updateLayout);
@@ -122,202 +92,123 @@ const Hero = ({ user, setIsOrderOpen, setIsAuthOpen, onRequireAuthForOrder }) =>
       return;
     }
     navigate('/services', { state: { serviceKey: key } });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
   const isMobileUa = /Mobi|Android|iPhone|iPad/i.test(ua);
   const isTelegram = /Telegram/i.test(ua);
   const heroOffsetStyle = isMobileUa && isTelegram ? { marginTop: 'calc(5rem + 16px)' } : undefined;
+
   const heroHeaderStyle =
     heroLayout === 'shortLandscape'
-      ? {
-          ...heroOffsetStyle,
-          alignItems: 'center',
-          paddingTop: 'calc(5.5rem + env(safe-area-inset-top, 0px))',
-          paddingBottom: 'calc(4.25rem + env(safe-area-inset-bottom, 0px))',
-        }
+      ? { ...heroOffsetStyle, alignItems: 'center', paddingTop: 'calc(5.5rem + env(safe-area-inset-top, 0px))', paddingBottom: 'calc(2.5rem + env(safe-area-inset-bottom, 0px))' }
       : heroLayout === 'mobilePortrait'
-        ? {
-            ...heroOffsetStyle,
-            alignItems: 'flex-start',
-            paddingTop: 'calc(5.5rem + env(safe-area-inset-top, 0px))',
-            paddingBottom: 'calc(9.25rem + env(safe-area-inset-bottom, 0px))',
-          }
+        ? { ...heroOffsetStyle, alignItems: 'flex-start', paddingTop: 'calc(5rem + env(safe-area-inset-top, 0px))', paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom, 0px))' }
         : heroOffsetStyle;
 
   const heroContentStyle =
     heroLayout === 'shortLandscape'
-      ? {
-          position: 'relative',
-          top: '10vh',
-          width: '100%',
-          transform: 'none',
-        }
+      ? { position: 'relative', top: '4vh', width: '100%', transform: 'none' }
       : heroLayout === 'mobilePortrait'
-        ? {
-            position: 'relative',
-            top: '4vh',
-            width: '100%',
-            transform: 'none',
-        }
-      : undefined;
+        ? { position: 'relative', width: '100%', transform: 'none' }
+        : undefined;
 
   const heroTitleStyle =
     heroLayout === 'shortLandscape'
       ? { marginTop: '1.25rem' }
       : heroLayout === 'mobilePortrait'
-        ? { fontSize: '1.1rem', marginBottom: '0.75rem' }
-        : undefined;
+        ? { fontSize: '1.1rem', marginTop: '0', marginBottom: '1.5rem' }
+        : { marginTop: '0', marginBottom: '1.5rem' };
 
-  const heroGridStyle =
-    heroLayout === 'shortLandscape'
-      ? {
-          gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
-          columnGap: '0.35rem',
-          rowGap: '0.25rem',
-          marginBottom: '0.75rem',
-          paddingLeft: 0,
-          paddingRight: 0,
-        }
-      : heroLayout === 'mobilePortrait'
-        ? {
-            columnGap: '0.5rem',
-            rowGap: '0.4rem',
-            marginBottom: '0.55rem',
-          }
-        : undefined;
-
-  const heroCardStyle =
-    heroLayout === 'shortLandscape'
-      ? { padding: '0.2rem' }
-      : heroLayout === 'mobilePortrait'
-        ? { padding: '0.3rem' }
-        : undefined;
-
-  const heroIconWrapStyle =
-    heroLayout === 'shortLandscape'
-      ? { marginBottom: '0.1rem', transform: 'scale(0.78)', transformOrigin: 'center' }
-      : heroLayout === 'mobilePortrait'
-        ? { transform: 'scale(0.85)', transformOrigin: 'center' }
-        : undefined;
-
-  const heroWhatsappStyle =
-    heroLayout === 'shortLandscape'
-      ? { padding: '0.5rem 0.9rem', fontSize: '0.62rem', whiteSpace: 'nowrap', lineHeight: '1' }
-      : heroLayout === 'mobilePortrait'
-        ? { padding: '0.6rem 1rem', fontSize: '0.72rem', whiteSpace: 'nowrap', lineHeight: '1' }
-        : undefined;
-
-  const heroWhatsappWrapStyle =
-    undefined;
-
-  const heroCtaTrackingClassName =
-    heroLayout === 'default' ? 'tracking-widest' : 'tracking-[0.08em]';
+  const current = HERO_IMGS[slideIdx];
+  const currentVideoSrc = current.videos.length > 1
+    ? current.videos[(videoIdx + slideIdx) % current.videos.length]
+    : current.videos[0];
 
   return (
-    <header 
-      ref={sectionRef} 
-      className="relative text-center text-white bg-[#050505] overflow-hidden min-h-[100svh] md:min-h-[100vh] flex items-center md:items-start justify-center pt-20 md:pt-14 lg:pt-16 pb-20 md:pb-10"
+    <header
+      ref={sectionRef}
+      className="relative text-white bg-white overflow-hidden flex items-stretch justify-center"
       data-section="hero"
       data-hero-layout={heroLayout}
       style={heroHeaderStyle}
     >
-      
-      <div 
-        className="absolute inset-0 z-0 transition-transform duration-300 ease-out"
-        style={{ 
-          backgroundImage: "url('/img/blurbg.jpg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          transform: `translateY(${scrollY * 0.3}px) scale(1.1)`,
-          filter: 'brightness(0.3) blur(4px)'
-        }}
-      ></div>
-
-      <div className="absolute inset-0 z-[1] bg-radial-gradient from-transparent via-[#050505]/60 to-[#050505]"></div>
 
       <div
-        className="hero-content relative z-10 container mx-auto px-4 flex flex-col items-center md:-mt-4 lg:-mt-6 xl:-mt-8"
+        className="hero-content relative z-10 w-full flex flex-col"
         style={heroContentStyle}
       >
-        
-        <h1
-          className="text-xl md:text-2xl lg:text-3xl font-black mb-4 md:mb-6 lg:mb-4 tracking-tight uppercase bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 px-4 leading-tight"
-          style={heroTitleStyle}
-        >
-          {t("HERE_YOU_CAN_ORDER")}
-        </h1>
 
-        <div
-          className="hero-services-grid grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-x-2 gap-y-6 md:gap-4 lg:gap-5 max-w-[1100px] lg:max-w-[1280px] mx-auto mb-6 md:mb-8 lg:mb-6 px-2 md:px-6"
-          style={heroGridStyle}
-        >
-          {services.map((service) => {
-            const colSpanClassName = service.colSpanClassName || '';
+        {/* Один большой слайд */}
+        <div className="relative w-full overflow-hidden" style={{ height: 'calc(100svh - var(--navbar-h, 80px) - 2rem - env(safe-area-inset-bottom, 0px))', maxHeight: 'calc(100svh - var(--navbar-h, 80px) - 2rem - env(safe-area-inset-bottom, 0px))' }}>
+          <div key={`${slideIdx}-${videoIdx}`} className="absolute inset-0">
+            <video
+              ref={videoRef}
+              src={currentVideoSrc}
+              aria-label={t(`${current.key}_T`)}
+              className={`w-full h-full object-cover hero-slide ${slideAnim}`}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
 
-            if (service.disabled) {
-              return (
-                <div
-                  key={service.key}
-                  aria-disabled="true"
-                  className={`${colSpanClassName} hero-service-card relative flex flex-col items-center justify-center p-2 md:p-4 lg:p-4 rounded-[0.75rem] md:rounded-[1.25rem] bg-white/[0.03] border border-white/10 backdrop-blur-xl cursor-default`}
-                  style={heroCardStyle}
-                >
-                  <div className="mb-1 md:mb-2 text-blue-400" style={heroIconWrapStyle}>
-                    {service.icon}
-                  </div>
-                  <span className="text-[7px] md:text-[9px] lg:text-[10px] font-semibold tracking-[0.02em] md:tracking-[0.05em] uppercase text-gray-400 text-center leading-tight">
-                    {t(`${service.key}_T`)}
-                  </span>
-                </div>
-              );
-            }
+          {/* Стеклянный оверлей — ЗДЕСЬ ВЫ МОЖЕТЕ ЗАКАЗАТЬ */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 md:top-8 z-10 pointer-events-none">
+            <div className="px-4 py-2.5 md:px-7 md:py-3.5 rounded-2xl md:rounded-3xl bg-white/10 border border-white/15 backdrop-blur-md shadow-xl">
+              <div className="text-white/90 text-xs md:text-lg lg:text-xl font-medium tracking-[0.2em] uppercase leading-tight text-center whitespace-nowrap">
+                {t('HERE_YOU_CAN_ORDER')}
+              </div>
+            </div>
+          </div>
 
-            return (
-              <button
-                key={service.key}
-                onClick={() => handleServiceClick(service.key)}
-                className={`${colSpanClassName} hero-service-card group relative flex flex-col items-center justify-center p-2 md:p-4 lg:p-4 rounded-[0.75rem] md:rounded-[1.25rem] bg-white/[0.03] border border-white/10 backdrop-blur-xl transition-all duration-500 hover:bg-white/[0.08] hover:border-blue-500/50 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.4)]`}
-                style={heroCardStyle}
-              >
-                <div className="mb-1 md:mb-2 text-blue-400 group-hover:text-blue-300 transition-colors duration-500 transform group-hover:scale-105" style={heroIconWrapStyle}>
-                  {service.icon}
-                </div>
-                <span className="text-[7px] md:text-[9px] lg:text-[10px] font-semibold tracking-[0.02em] md:tracking-[0.05em] uppercase text-gray-400 group-hover:text-white transition-colors duration-500 text-center leading-tight">
-                  {t(`${service.key}_T`)}
-                </span>
-
-                <div className="absolute inset-0 rounded-[0.75rem] md:rounded-[1.25rem] bg-gradient-to-br from-blue-500/0 via-blue-500/0 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="flex flex-col items-center justify-center gap-1.5 md:gap-2 mt-4 md:mt-2" style={heroWhatsappWrapStyle}>
-          <a
-            href="https://wa.me/+995591160685"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`group relative flex items-center justify-center gap-2 px-5 py-2 md:px-6 md:py-2.5 rounded-xl bg-[#25D366] text-white font-bold uppercase ${heroCtaTrackingClassName} text-[10px] md:text-xs whitespace-nowrap transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(37,211,102,0.4)] active:scale-95 w-full max-w-[280px]`}
-            style={heroWhatsappStyle}
-          >
-            <MessageCircle className="w-4 h-4 md:w-5 md:h-5 fill-current" />
-            {t("CONTACT_WHATSAPP")}
-            
-            <div className="absolute inset-0 rounded-xl md:rounded-2xl bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-          </a>
-
-          <OrderButton
-            user={user}
-            setIsOrderOpen={setIsOrderOpen}
-            setIsAuthOpen={setIsAuthOpen}
-            onRequireAuth={onRequireAuthForOrder}
-            variant="cta"
-            labelKey="ORDER_ON_SITE"
-            className={`bg-blue-600 text-white px-5 py-2 md:px-6 md:py-2.5 rounded-xl text-[10px] md:text-xs font-bold uppercase ${heroCtaTrackingClassName} shadow-lg shadow-blue-600/30 hover:bg-blue-700 active:scale-95 transition-all duration-300 w-full max-w-[280px] whitespace-nowrap`}
-            style={heroWhatsappStyle}
+          {/* Весь слайд кликабелен */}
+          <button
+            onClick={() => handleServiceClick(current.key)}
+            className="absolute inset-0 z-[5]"
+            aria-label={t(`${current.key}_T`)}
           />
+
+          {/* Стрелка влево */}}
+          <button
+            onClick={() => goTo(-1)}
+            className="absolute left-3 md:left-5 top-1/2 -translate-y-1/2 w-11 h-11 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/70 border border-white/20 text-white transition-all active:scale-90 z-10"
+          >
+            <svg className="w-5 h-5 md:w-7 md:h-7" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+
+          {/* Стрелка вправо */}
+          <button
+            onClick={() => goTo(1)}
+            className="absolute right-3 md:right-5 top-1/2 -translate-y-1/2 w-11 h-11 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/70 border border-white/20 text-white transition-all active:scale-90 z-10"
+          >
+            <svg className="w-5 h-5 md:w-7 md:h-7" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+
+          {/* Название + клик для перехода */}
+          <button
+            onClick={() => handleServiceClick(current.key)}
+            className="absolute bottom-0 left-0 right-0 px-5 py-6 md:px-10 md:py-10 text-left group z-10"
+          >
+            <p className="text-white text-xl md:text-3xl font-light tracking-[0.12em] uppercase leading-tight group-hover:text-cyan-300 transition-colors">
+              {t(`${current.key}_T`)}
+            </p>
+            <div className="w-14 h-[2px] md:w-24 md:h-[3px] bg-cyan-500 mt-3 md:mt-4 group-hover:w-28 md:group-hover:w-48 transition-all duration-500 opacity-70" />
+          </button>
+
+          {/* Точки */}
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+            {HERO_IMGS.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => { setSlideAnim(''); setSlideIdx(i); setVideoIdx(v => (v + 1) % 2); }}
+                className={`h-1.5 rounded-full transition-all duration-300 ${i === slideIdx ? 'bg-white w-4' : 'bg-white/40 w-1.5'}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
@@ -325,96 +216,40 @@ const Hero = ({ user, setIsOrderOpen, setIsAuthOpen, onRequireAuthForOrder }) =>
         .bg-radial-gradient {
           background: radial-gradient(circle at center, transparent 0%, rgba(5,5,5,0.8) 100%);
         }
-
+        .hero-slide { transition: opacity 0.4s ease; }
+        .slide-out-left { opacity: 0; }
+        .slide-out-right { opacity: 0; }
+        .slide-in-right { animation: heroFadeIn 0.4s ease forwards; }
+        .slide-in-left { animation: heroFadeIn 0.4s ease forwards; }
+        @keyframes heroFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
         @media (min-width: 768px) and (max-width: 1366px) and (min-height: 700px) and (pointer: coarse) {
           header[data-section="hero"] {
-            min-height: 100svh;
+            min-height: calc(100svh - 2rem);
             align-items: center;
             padding-top: 0 !important;
             padding-bottom: 0 !important;
           }
-
-          .hero-content {
-            margin-top: 0 !important;
-          }
-
-          .hero-services-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 1.25rem;
-          }
-
-          .hero-service-card {
-            padding: 1.25rem;
-          }
+          .hero-content { margin-top: 0 !important; }
         }
-
-        @media (min-width: 768px) and (max-width: 1366px) and (max-height: 820px) and (pointer: coarse) {
-          .hero-services-grid {
-            gap: 1rem;
-          }
-
-          .hero-service-card {
-            padding: 1rem;
-          }
-        }
-
         @media (max-height: 430px) and (max-width: 900px) and (orientation: landscape) {
           header[data-section="hero"] {
             align-items: flex-start;
             padding-top: calc(3.75rem + env(safe-area-inset-top, 0px)) !important;
-            padding-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px)) !important;
+            padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)) !important;
           }
-
-          .hero-services-grid {
-            column-gap: 0.35rem !important;
-            row-gap: 0.15rem !important;
-            margin-bottom: 0.4rem !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-          }
-
-          .hero-service-card {
-            padding: 0.2rem !important;
-          }
-
-          .hero-service-card > div:first-child {
-            margin-bottom: 0.1rem !important;
-          }
-
-          .hero-content h1 {
-            margin-bottom: 0.4rem !important;
-          }
-
-          a[href^="https://wa.me/"] {
-            margin-top: 0 !important;
-            padding: 0.5rem 0.9rem !important;
-          }
+          .hero-content h1 { margin-bottom: 0.4rem !important; }
         }
-
         @media (max-width: 430px) and (max-height: 740px) {
           header[data-section="hero"] {
             align-items: flex-start;
             padding-top: calc(5.5rem + env(safe-area-inset-top, 0px)) !important;
-            padding-bottom: calc(9.25rem + env(safe-area-inset-bottom, 0px)) !important;
+            padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)) !important;
           }
-
-          .hero-content h1 {
-            font-size: 1.1rem;
-            margin-bottom: 0.75rem;
-          }
-
-          .hero-services-grid {
-            gap-x: 0.5rem;
-            gap-y: 0.4rem !important;
-            margin-bottom: 0.55rem !important;
-          }
-
-          .hero-service-card {
-            padding: 0.3rem !important;
-          }
-
+          .hero-content h1 { font-size: 1.1rem; margin-bottom: 0.75rem; }
         }
-
       `}</style>
     </header>
   );

@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ordersAPI, authAPI, filesAPI } from '../config/api';
-import { playSound } from '../utils/sound';
+import { ordersAPI, filesAPI } from '../config/api';
 
 const OrderSidebar = ({ 
   isOrderOpen, 
-  setIsOrderOpen, 
-  brandGradient,
-  user           
+  setIsOrderOpen
 }) => {
   const { t } = useTranslation();
   const pushedRef = useRef(false);
@@ -47,64 +44,8 @@ const OrderSidebar = ({
       if (showSuccess) {
           setShowSuccess(false);
       }
-      
-      // Загрузка полной информации о пользователе
-      const loadUserData = async () => {
-        if (user && user._id) {
-          try {
-            // Получаем полную информацию о текущем пользователе
-            const userData = await authAPI.me();
-            
-            // Автозаполнение всеми доступными данными
-            setFirstName(prev => prev || userData.firstName || user.firstName || '');
-            setLastName(prev => prev || userData.lastName || user.lastName || '');
-            
-            // Приоритет: телефон > email > другой контакт
-            setContact(prev => {
-              if (prev) return prev;
-              if (userData.phone) return userData.phone;
-              if (user.phone) return user.phone;
-              if (userData.email) return userData.email;
-              if (user.email) return user.email;
-              return '';
-            });
-            
-            console.log('Данные пользователя загружены:', userData);
-          } catch (error) {
-            console.log('Не удалось загрузить данные пользователя, используем базовые:', error);
-            
-            // Fallback на базовые данные из user prop
-            setFirstName(prev => prev || user.firstName || '');
-            setLastName(prev => prev || user.lastName || '');
-            
-            setContact(prev => {
-              if (prev) return prev;
-              if (user.phone) return user.phone;
-              if (user.email) return user.email;
-              return '';
-            });
-          }
-        } else {
-          // Сброс полей если нет пользователя
-          setFirstName('');
-          setLastName('');
-          setContact('');
-        }
-      };
-      
-      loadUserData();
-      try {
-        const tracker = window.__analyticsTracker;
-        if (tracker) tracker.sectionOpen('order');
-      } catch { void 0; }
     }
-    return () => {
-      try {
-        const t = window.__analyticsTracker;
-        if (t && isOrderOpen) t.sectionClose('order');
-      } catch { void 0; }
-    };
-  }, [isOrderOpen, user, authAPI]);
+  }, [isOrderOpen]);
 
   useEffect(() => {
     const onPop = () => {
@@ -349,7 +290,6 @@ const handleSubmit = async (e) => {
       console.log('Order created successfully:', result);
       
       setShowSuccess(true);
-      try { playSound('order'); } catch { void 0; }
       setChosenServices([]);
       setTempSelection([]);
       setComment("");
@@ -407,7 +347,7 @@ const handleSubmit = async (e) => {
               </p>
               <button 
                 onClick={requestClose}
-                className={`px-8 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white ${brandGradient || 'bg-blue-600'}`}
+                className={`px-8 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white bg-blue-600`}
               >
                 {t("Закрыть")}
               </button>
@@ -590,7 +530,7 @@ const handleSubmit = async (e) => {
                 <div className="pt-4">
                   <button 
                     disabled={loading}
-                    className={`w-full py-5 rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] text-white transition-all transform hover:scale-[1.02] active:scale-[0.98] ${brandGradient || 'bg-blue-600'} disabled:opacity-50`}
+                    className={`w-full py-5 rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] text-white transition-all transform hover:scale-[1.02] active:scale-[0.98] bg-blue-600 disabled:opacity-50`}
                   >
                     {loading ? t("...") : t("Подтвердить заказ")}
                   </button>
