@@ -9,6 +9,9 @@
     "lint": "eslint .",
     "generate:icons": "node scripts/generate-icons.mjs",
     "update:svg": "node scripts/update-svg-icons.mjs",
+    "optimize:videos": "node scripts/optimize-videos.mjs",
+    "optimize:videos:analyze": "node scripts/optimize-videos.mjs --analyze",
+    "optimize:videos:guide": "node scripts/optimize-videos.mjs --guide",
     "preview": "vite preview"
   },
   "dependencies": {

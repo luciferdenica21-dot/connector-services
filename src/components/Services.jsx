@@ -22,12 +22,25 @@ const SERVICES_VIDEOS = {
   S2: ['/gallery/paint.mp4', '/gallery/paint2.mp4'],
   S3: ['/gallery/graving.mp4', '/gallery/graving2.mp4'],
   S4: ['/gallery/lasermetal.mp4', '/gallery/lasermetal2.mp4'],
-  S5: ['/gallery/cutting.mp4', '/gallery/cutting2.mp4'],
+  S5: ['/gallery/cutting.mp4'],
   S6: ['/gallery/paint.mp4', '/gallery/paint2.mp4'],
   S7: ['/gallery/mech.mp4'],
   S8: ['/gallery/welding.mp4', '/gallery/welding2.mp4'],
   S9: ['/gallery/mech.mp4'],
   S10: ['/gallery/cnc.mp4', '/gallery/cnc2.mp4'],
+};
+
+const SERVICES_POSTERS = {
+  S1: '/gallery/Гибочные работы по металлам.jpg',
+  S2: '/gallery/Жидкостная окраска.jpg',
+  S3: '/gallery/Лазерная гравировка.jpg',
+  S4: '/gallery/Лазерная резка металлов.jpg',
+  S5: '/gallery/Лазерная резка неметаллических материалов.jpg',
+  S6: '/gallery/Порошковая окраска.jpg',
+  S7: '/gallery/Продажа материалов.jpg',
+  S8: '/gallery/Сварка.jpg',
+  S9: '/gallery/Токарные работы.jpg',
+  S10: '/gallery/ЧПУ фрезеровка и раскрой листовых материалов.jpg',
 };
 
 const KEYS = ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10'];
@@ -315,17 +328,19 @@ const Services = ({ setIsOrderOpen }) => {
       {selectedKey && (() => {
         const videos = SERVICES_VIDEOS[selectedKey] || [];
         const videoSrc = videos.length ? videos[0] : '';
+        const poster = SERVICES_POSTERS[selectedKey];
         return (
           <div className="fixed inset-0 z-[90] bg-black overflow-hidden">
             {videoSrc && (
               <video
                 src={videoSrc}
+                poster={poster}
                 className="absolute inset-0 w-full h-full object-cover blur-[3px] md:blur-[4px] scale-[1.02]"
                 autoPlay
                 muted
                 loop
                 playsInline
-                preload="auto"
+                preload="metadata"
               />
             )}
             <div className="absolute inset-0 bg-black/70" />
@@ -368,6 +383,7 @@ export const ServiceSeoPage = ({ setIsOrderOpen }) => {
   const isLocked = serviceKey ? LOCKED_KEYS.includes(serviceKey) : false;
   const videos = serviceKey ? (SERVICES_VIDEOS[serviceKey] || []) : [];
   const videoSrc = videos.length ? videos[0] : '';
+  const poster = serviceKey ? SERVICES_POSTERS[serviceKey] : '';
 
   if (!serviceKey || !SEO_SERVICE_KEYS.includes(serviceKey)) {
     return (
@@ -389,6 +405,7 @@ export const ServiceSeoPage = ({ setIsOrderOpen }) => {
       {videoSrc && (
         <video
           src={videoSrc}
+          poster={poster}
           className="absolute inset-0 w-full h-full object-cover blur-[3px] md:blur-[4px] scale-[1.02]"
           autoPlay
           muted

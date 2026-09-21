@@ -3,14 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const HERO_IMGS = [
-  { key: 'S1', videos: ['/gallery/bending.mp4', '/gallery/bending2.mp4'] },
-  { key: 'S3', videos: ['/gallery/graving.mp4', '/gallery/graving2.mp4'] },
-  { key: 'S4', videos: ['/gallery/lasermetal.mp4', '/gallery/lasermetal2.mp4'] },
-  { key: 'S5', videos: ['/gallery/cutting.mp4', '/gallery/cutting2.mp4'] },
-  { key: 'S6', videos: ['/gallery/paint.mp4', '/gallery/paint2.mp4'] },
-  { key: 'S8', videos: ['/gallery/welding.mp4', '/gallery/welding2.mp4'] },
-  { key: 'S9', videos: ['/gallery/mech.mp4'] },
-  { key: 'S10', videos: ['/gallery/cnc.mp4', '/gallery/cnc2.mp4'] },
+  { key: 'S1', videos: ['/gallery/bending.mp4', '/gallery/bending2.mp4'], poster: '/gallery/Гибочные работы по металлам.jpg' },
+  { key: 'S3', videos: ['/gallery/graving.mp4', '/gallery/graving2.mp4'], poster: '/gallery/Лазерная гравировка.jpg' },
+  { key: 'S4', videos: ['/gallery/lasermetal.mp4', '/gallery/lasermetal2.mp4'], poster: '/gallery/Лазерная резка металлов.jpg' },
+  { key: 'S5', videos: ['/gallery/cutting.mp4'], poster: '/gallery/Лазерная резка неметаллических материалов.jpg' },
+  { key: 'S6', videos: ['/gallery/paint.mp4', '/gallery/paint2.mp4'], poster: '/gallery/Порошковая окраска.jpg' },
+  { key: 'S8', videos: ['/gallery/welding.mp4', '/gallery/welding2.mp4'], poster: '/gallery/Сварка.jpg' },
+  { key: 'S9', videos: ['/gallery/mech.mp4'], poster: '/gallery/Токарные работы.jpg' },
+  { key: 'S10', videos: ['/gallery/cnc.mp4', '/gallery/cnc2.mp4'], poster: '/gallery/ЧПУ фрезеровка и раскрой листовых материалов.jpg' },
 ];
 
 const Hero = ({ setIsOrderOpen }) => {
@@ -124,6 +124,24 @@ const Hero = ({ setIsOrderOpen }) => {
   const currentVideoSrc = current.videos.length > 1
     ? current.videos[(videoIdx + slideIdx) % current.videos.length]
     : current.videos[0];
+  const prevIdx = (slideIdx - 1 + HERO_IMGS.length) % HERO_IMGS.length;
+  const nextIdx = (slideIdx + 1) % HERO_IMGS.length;
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const preloadNeighbors = () => {
+      [prevIdx, nextIdx].forEach(idx => {
+        const s = HERO_IMGS[idx];
+        s.videos.forEach(src => {
+          const v = document.createElement('video');
+          v.preload = 'metadata';
+          v.src = src;
+        });
+      });
+    };
+    const t = setTimeout(preloadNeighbors, 300);
+    return () => clearTimeout(t);
+  }, [slideIdx, prevIdx, nextIdx]);
 
   return (
     <header
@@ -145,6 +163,7 @@ const Hero = ({ setIsOrderOpen }) => {
             <video
               ref={videoRef}
               src={currentVideoSrc}
+              poster={current.poster}
               aria-label={t(`${current.key}_T`)}
               className={`w-full h-full object-cover hero-slide ${slideAnim}`}
               autoPlay
@@ -157,9 +176,9 @@ const Hero = ({ setIsOrderOpen }) => {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
 
           {/* Стеклянный оверлей — ЗДЕСЬ ВЫ МОЖЕТЕ ЗАКАЗАТЬ */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 md:top-8 z-10 pointer-events-none">
-            <div className="px-4 py-2.5 md:px-7 md:py-3.5 rounded-2xl md:rounded-3xl bg-white/10 border border-white/15 backdrop-blur-md shadow-xl">
-              <div className="text-white/90 text-xs md:text-lg lg:text-xl font-medium tracking-[0.2em] uppercase leading-tight text-center whitespace-nowrap">
+          <div className="absolute top-[30%] left-1/2 -translate-x-1/2 md:top-[33%] z-10 pointer-events-none">
+            <div className="px-5 py-3 md:px-10 md:py-5 rounded-2xl md:rounded-3xl bg-white/10 border border-white/15 backdrop-blur-md shadow-xl">
+              <div className="text-white/90 text-sm md:text-xl lg:text-2xl xl:text-3xl font-medium tracking-[0.2em] uppercase leading-tight text-center whitespace-nowrap">
                 {t('HERE_YOU_CAN_ORDER')}
               </div>
             </div>
@@ -172,7 +191,7 @@ const Hero = ({ setIsOrderOpen }) => {
             aria-label={t(`${current.key}_T`)}
           />
 
-          {/* Стрелка влево */}}
+          {/* Стрелка влево */}
           <button
             onClick={() => goTo(-1)}
             className="absolute left-3 md:left-5 top-1/2 -translate-y-1/2 w-11 h-11 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/70 border border-white/20 text-white transition-all active:scale-90 z-10"
