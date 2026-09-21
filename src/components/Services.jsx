@@ -102,6 +102,8 @@ const Services = ({ setIsOrderOpen }) => {
   const lang = pickLang(i18n?.language);
 
   const [selectedKey, setSelectedKey] = useState(null);
+  const [overlayVideoVisible, setOverlayVideoVisible] = useState(false);
+  const overlayPosterTimerRef = useRef(null);
   const pushedRef = useRef(false);
   const trackRef = useRef(null);
   const offsetRef = useRef(LOOP_LEN); // стартуем со второй копии
@@ -245,6 +247,17 @@ const Services = ({ setIsOrderOpen }) => {
   };
 
   useEffect(() => {
+    if (!selectedKey) {
+      if (overlayPosterTimerRef.current) clearTimeout(overlayPosterTimerRef.current);
+      setOverlayVideoVisible(false);
+      return;
+    }
+    setOverlayVideoVisible(false);
+    overlayPosterTimerRef.current = setTimeout(() => setOverlayVideoVisible(true), 3000);
+    return () => { if (overlayPosterTimerRef.current) clearTimeout(overlayPosterTimerRef.current); };
+  }, [selectedKey]);
+
+  useEffect(() => {
     const onServicesClose = () => { setSelectedKey(null); };
     window.addEventListener('services:close', onServicesClose);
     return () => window.removeEventListener('services:close', onServicesClose);
@@ -332,16 +345,21 @@ const Services = ({ setIsOrderOpen }) => {
         return (
           <div className="fixed inset-0 z-[90] bg-black overflow-hidden">
             {videoSrc && (
-              <video
-                src={videoSrc}
-                poster={poster}
-                className="absolute inset-0 w-full h-full object-cover blur-[3px] md:blur-[4px] scale-[1.02]"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-              />
+              <>
+                <img
+                  src={poster}
+                  className="absolute inset-0 w-full h-full object-cover blur-[3px] md:blur-[4px] scale-[1.02]"
+                />
+                <video
+                  src={videoSrc}
+                  className={`absolute inset-0 w-full h-full object-cover blur-[3px] md:blur-[4px] scale-[1.02] transition-opacity duration-700 ease-in-out ${overlayVideoVisible ? 'opacity-100' : 'opacity-0'}`}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                />
+              </>
             )}
             <div className="absolute inset-0 bg-black/70" />
             <button
@@ -385,6 +403,12 @@ export const ServiceSeoPage = ({ setIsOrderOpen }) => {
   const videoSrc = videos.length ? videos[0] : '';
   const poster = serviceKey ? SERVICES_POSTERS[serviceKey] : '';
 
+  const [seoVideoVisible, setSeoVideoVisible] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setSeoVideoVisible(true), 3000);
+    return () => clearTimeout(t);
+  }, [serviceKey]);
+
   if (!serviceKey || !SEO_SERVICE_KEYS.includes(serviceKey)) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-6">
@@ -403,16 +427,21 @@ export const ServiceSeoPage = ({ setIsOrderOpen }) => {
   return (
     <section className="relative min-h-[calc(100svh-5rem-2rem)] overflow-hidden">
       {videoSrc && (
-        <video
-          src={videoSrc}
-          poster={poster}
-          className="absolute inset-0 w-full h-full object-cover blur-[3px] md:blur-[4px] scale-[1.02]"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-        />
+        <>
+          <img
+            src={poster}
+            className="absolute inset-0 w-full h-full object-cover blur-[3px] md:blur-[4px] scale-[1.02]"
+          />
+          <video
+            src={videoSrc}
+            className={`absolute inset-0 w-full h-full object-cover blur-[3px] md:blur-[4px] scale-[1.02] transition-opacity duration-700 ease-in-out ${seoVideoVisible ? 'opacity-100' : 'opacity-0'}`}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+          />
+        </>
       )}
       <div className="absolute inset-0 bg-black/70" />
       <div className="relative z-10 px-4 md:px-10 lg:px-16 pt-24 pb-28 w-full">
