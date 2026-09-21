@@ -21,17 +21,15 @@ const Hero = ({ setIsOrderOpen }) => {
   const [slideIdx, setSlideIdx] = useState(0);
   const [slideAnim, setSlideAnim] = useState('');
   const [videoIdx, setVideoIdx] = useState(0);
-  const [videoVisible, setVideoVisible] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const animRef = useRef(false);
   const videoRef = useRef(null);
-  const posterTimerRef = useRef(null);
 
   const goTo = (dir) => {
     if (animRef.current) return;
     animRef.current = true;
     setSlideAnim(dir > 0 ? 'slide-out-left' : 'slide-out-right');
-    if (posterTimerRef.current) clearTimeout(posterTimerRef.current);
-    setVideoVisible(false);
+    setVideoLoaded(false);
     setTimeout(() => {
       setSlideIdx(i => (i + dir + HERO_IMGS.length) % HERO_IMGS.length);
       setVideoIdx(v => (v + 1) % 2);
@@ -143,14 +141,9 @@ const Hero = ({ setIsOrderOpen }) => {
         });
       });
     };
-    if (posterTimerRef.current) clearTimeout(posterTimerRef.current);
-    setVideoVisible(false);
-    posterTimerRef.current = setTimeout(() => setVideoVisible(true), 3000);
+    setVideoLoaded(false);
     const t = setTimeout(preloadNeighbors, 300);
-    return () => {
-      if (posterTimerRef.current) clearTimeout(posterTimerRef.current);
-      clearTimeout(t);
-    };
+    return () => clearTimeout(t);
   }, [slideIdx, prevIdx, nextIdx]);
 
   return (
@@ -168,18 +161,15 @@ const Hero = ({ setIsOrderOpen }) => {
       >
 
         {/* Один большой слайд */}
-        <div className="relative w-full overflow-hidden" style={{ height: 'calc(100svh - var(--navbar-h, 80px) - 2rem - env(safe-area-inset-bottom, 0px))', maxHeight: 'calc(100svh - var(--navbar-h, 80px) - 2rem - env(safe-area-inset-bottom, 0px))' }}>
+        <div className="relative w-full overflow-hidden bg-black" style={{ height: 'calc(100svh - var(--navbar-h, 80px) - 2rem - env(safe-area-inset-bottom, 0px))', maxHeight: 'calc(100svh - var(--navbar-h, 80px) - 2rem - env(safe-area-inset-bottom, 0px))' }}>
           <div key={`${slideIdx}-${videoIdx}`} className="absolute inset-0">
-            <img
-              src={current.poster}
-              aria-label={t(`${current.key}_T`)}
-              className={`absolute inset-0 w-full h-full object-cover ${slideAnim}`}
-            />
             <video
               ref={videoRef}
               src={currentVideoSrc}
+              poster={current.poster}
+              onLoadedData={() => setVideoLoaded(true)}
               aria-label={t(`${current.key}_T`)}
-              className={`absolute inset-0 w-full h-full object-cover hero-slide ${slideAnim} transition-opacity duration-700 ease-in-out ${videoVisible ? 'opacity-100' : 'opacity-0'}`}
+              className={`w-full h-full object-cover hero-slide ${slideAnim} transition-opacity duration-[1500ms] ease-out ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
               autoPlay
               muted
               loop
