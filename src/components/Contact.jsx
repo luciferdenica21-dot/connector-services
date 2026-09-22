@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 const Contact = () => {
   const contacts = [
@@ -62,17 +62,6 @@ const Contact = () => {
     },
   ];
 
-  useEffect(() => {
-    try {
-      const tracker = window.__analyticsTracker;
-      if (tracker) tracker.sectionOpen('contact');
-      return () => {
-        const t = window.__analyticsTracker;
-        if (t) t.sectionClose('contact');
-      };
-    } catch { void 0; }
-  }, []);
-
   return (
     <>
       <style>{`
@@ -103,7 +92,6 @@ const Contact = () => {
 
         <div className="relative z-10 max-w-5xl mx-auto flex flex-col items-center gap-8">
 
-          {/* Копирайт — над иконками */}
           <div className="reveal-on-scroll text-center">
             <p className="footer-glow text-[10px] md:text-sm font-bold tracking-[0.3em] uppercase text-white/20 transition-all duration-500">
               &copy; {new Date().getFullYear()} <span className="text-white/40">Connector Official By PHOENIX.</span>. All rights reserved.
@@ -115,7 +103,6 @@ const Contact = () => {
             </div>
           </div>
 
-          {/* Иконки контактов — стиль как в бургере */}
           <div className="flex items-center justify-center gap-8">
             {contacts.map((contact) => (
               <a
@@ -134,7 +121,11 @@ const Contact = () => {
         </div>
       </section>
 
-      <footer className="relative bg-[#050505] border-t border-white/[0.02] py-2 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:py-4 md:pb-4"></footer>
+      <footer className="relative bg-[#050505] border-t border-white/[0.02] py-2 md:py-4 text-center">
+        <p className="text-[10px] md:text-xs tracking-[0.2em] uppercase text-white/40 hover:text-white/60 transition-colors">
+          Created by PXDSTUDIO
+        </p>
+      </footer>
     </>
   );
 };

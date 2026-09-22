@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const Navbar = ({ setIsOrderOpen }) => {
+const Navbar = () => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -55,14 +55,11 @@ const Navbar = ({ setIsOrderOpen }) => {
     >
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Логотип */}
           <div className="flex items-center z-10">
             <a
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                window.dispatchEvent(new Event('useterms:close'));
-                window.dispatchEvent(new Event('services:close'));
                 navigate('/');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
@@ -73,22 +70,15 @@ const Navbar = ({ setIsOrderOpen }) => {
             </a>
           </div>
 
-          {/* Правая часть */}
           <div className="flex items-center gap-2 md:gap-4">
 
-            {/* Кнопка связи — десктоп: текст+иконка, моб: зелёный телефон */}
             <div className="relative">
               <button
                 onClick={() => setContactOpen(v => !v)}
                 className="flex items-center gap-1.5 p-2 rounded-lg hover:bg-green-500/10 transition-all"
                 title={t('КОНТАКТЫ')}
               >
-                {/* Моб: только телефон */}
-                <svg className="w-5 h-5 text-green-400 md:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.72a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.02z" />
-                </svg>
-                {/* Десктоп: телефон + текст */}
-                <svg className="w-5 h-5 text-green-400 hidden md:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.72a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.02z" />
                 </svg>
                 <span className="hidden md:inline text-[11px] font-bold text-green-400 uppercase tracking-wide">{t('CONTACT_US')}</span>
@@ -115,7 +105,6 @@ const Navbar = ({ setIsOrderOpen }) => {
               {contactOpen && <div className="fixed inset-0 z-[59]" onClick={() => setContactOpen(false)} />}
             </div>
 
-            {/* Глобус — смена языка */}
             <button onClick={cycleLang} className="flex items-center p-2 rounded-lg hover:bg-blue-500/10 transition-all" title={langLabel}>
               <span className="text-[11px] font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-400">{langLabel}</span>
             </button>
