@@ -13,8 +13,21 @@ const HERO_IMGS = [
   { key: 'S10', videos: ['/gallery/cnc.mp4'] },
 ];
 
+const SERVICE_SLUG_BY_KEY = {
+  S1: 'sheet-bending',
+  S2: 'wet-painting',
+  S3: 'laser-engraving',
+  S4: 'laser-metal-cut',
+  S5: 'laser-nonmetal-cut',
+  S6: 'powder-painting',
+  S7: 'material-sales',
+  S8: 'welding',
+  S9: 'traditional-machining',
+  S10: 'cnc-routing',
+};
+
 const Hero = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -72,7 +85,10 @@ const Hero = () => {
   }, []);
 
   const handleServiceClick = (key) => {
-    navigate('/services', { state: { serviceKey: key } });
+    const slug = SERVICE_SLUG_BY_KEY[key];
+    if (!slug) return;
+    const lang = (i18n?.language || 'ru').slice(0, 2).toLowerCase();
+    navigate(`/services/${slug}?lang=${encodeURIComponent(lang)}`);
   };
 
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';

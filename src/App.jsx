@@ -1,8 +1,8 @@
 import './i18n';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import Services, { ServiceSeoPage } from './components/Services';
+import { ServiceSeoPage } from './components/Services';
 import Contact from './components/Contact';
 
 function App() {
@@ -27,14 +27,7 @@ function App() {
             </MainLayout>
           } 
         />
-        <Route
-          path="/services"
-          element={
-            <MainLayout showContact={true}>
-              <Services />
-            </MainLayout>
-          }
-        />
+        <Route path="/services" element={<Navigate to="/" replace />} />
         <Route
           path="/services/:slug"
           element={

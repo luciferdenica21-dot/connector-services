@@ -172,32 +172,6 @@ const Services = () => {
     navigate(`/services/${slug}?lang=${encodeURIComponent(lang)}`, { replace: false });
   };
 
-  useEffect(() => {
-    const fromState = location?.state?.serviceKey;
-    if (fromState && KEYS.includes(fromState)) {
-      const slug = SERVICE_SLUG_BY_KEY[fromState];
-      if (slug) navigate(`/services/${slug}?lang=${encodeURIComponent(lang)}`, { replace: false });
-    }
-  }, [location?.state?.serviceKey, lang, navigate]);
-
-  useEffect(() => {
-    const handleServiceOpen = (e) => {
-      const key = e.detail?.key;
-      if (!key || !KEYS.includes(key) || LOCKED_KEYS.includes(key)) return;
-      const slug = SERVICE_SLUG_BY_KEY[key];
-      if (slug) navigate(`/services/${slug}?lang=${encodeURIComponent(lang)}`, { replace: false });
-    };
-    window.addEventListener('service:open', handleServiceOpen);
-    return () => window.removeEventListener('service:open', handleServiceOpen);
-  }, [lang, navigate]);
-
-  useEffect(() => {
-    const origin = 'https://www.connector.ge';
-    const url = `${origin}/services?lang=${encodeURIComponent(lang)}`;
-    upsertMeta('meta[property="og:url"]', { content: url });
-    upsertLink('canonical', null, url);
-  }, [lang]);
-
   return (
     <section id="services" className="relative py-16 bg-[#050505] overflow-hidden" data-section="services">
       <div
