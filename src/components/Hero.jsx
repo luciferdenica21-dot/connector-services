@@ -14,16 +14,9 @@ const HERO_IMGS = [
 ];
 
 const SERVICE_SLUG_BY_KEY = {
-  S1: 'sheet-bending',
-  S2: 'wet-painting',
-  S3: 'laser-engraving',
-  S4: 'laser-metal-cut',
-  S5: 'laser-nonmetal-cut',
-  S6: 'powder-painting',
-  S7: 'material-sales',
-  S8: 'welding',
-  S9: 'traditional-machining',
-  S10: 'cnc-routing',
+  S1: 'metal-bending', S2: 'liquid-coating', S3: 'laser-engraving',
+  S4: 'laser-cutting-metals', S5: 'laser-cutting-nonmetals', S6: 'powder-coating',
+  S8: 'welding', S9: 'turning', S10: 'cnc-milling',
 };
 
 const Hero = () => {
