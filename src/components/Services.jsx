@@ -336,24 +336,6 @@ export const ServiceSeoPage = () => {
           </div>
           {isLocked && <div className="mt-3 text-white/60 text-xs md:text-sm">{t('service_soon')}</div>}
         </div>
-
-        <div className="mt-10 md:mt-16">
-          <div className="flex flex-wrap gap-2">
-            {SEO_SERVICE_KEYS.map((k) => (
-              <Link
-                key={k}
-                to={`/services/${SERVICE_SLUG_BY_KEY[k]}?lang=${encodeURIComponent(lang)}`}
-                className={`px-2.5 md:px-3.5 py-1.5 md:py-2 rounded-xl border backdrop-blur text-[11px] md:text-xs transition-colors ${
-                  k === serviceKey
-                    ? 'bg-white/15 border-cyan-400/40 text-white'
-                    : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10'
-                }`}
-              >
-                {t(`${k}_T`)}
-              </Link>
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   );
